@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
+    
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+  
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
+</head>
+<body>
+	<style>
+	/*
+	table {
+	  border: 1px solid #666;   
+		width: 100%;
+	}
+	th {
+	  background: #f8f8f8; 
+	  font-weight: bold;    
+		padding: 2px;
+	}
+    */
+	
+	</style>
+<!--
+	<form action="test.php" method="POST">
+		<label for="name">Name : </label>
+		<input name="name" type="text" id="name"> <br><br>
+		<label for="age">Age : </label>
+		<input name="age" type="text" id="age"> <br><br>	
+		<input type="submit" value="submit">
+	</form> -->
+	
+	<form id="sendForm">
+		<input type="submit" value="Get_Pokemon">
+		<input id="description" type="submit" value="Get_Description">
+	    <input id="clear" type="submit" value="Clear_Table">
+	</form>
+
+	 
+	<div id="responseId" style="margin-top:50px;">
+	    <!--
+		<table id="personDataTable">
+    	</table> -->
+	</div>
+	
+	<script>
+	
+	/*
+		$(document).ready(function(){
+			$('#sendForm').submit(function(e){
+				//prevent form from changing page.
+				e.preventDefault();
+				
+				// form is a variable that is to hold the jquery wrapper object
+				// need dollar sign
+				// pointing to form object
+				var $form = $(this);
+				
+				//.find can be skipped.
+				var $inputs = $form.find("input, select, button, textarea");
+				$inputs.prop("disabled",true);
+				
+				$.ajax({
+				url: "http://pokeapi.salestock.net/api/v2/pokemon/1",
+				type: "GET",
+				dataType: "json",
+				
+				}).done(function(data){
+					var bulbasaur = data.name;
+					console.log(bulbasaur);
+					console.log(data);
+				}).fail(function(jqXHR,textStatus){
+					console.log("fail");
+				}).always(function () {
+					// Reenable the inputs
+					$inputs.prop("disabled", false);
+				});
+				
+			});
+			
+		});
+		*/
+		
+		$(document).ready(function(){
+		    
+		   //GET DESCRIPTION//
+		   /*
+		   $('#description').on('click',function(e){
+		     e.preventDefault();
+		     
+		     $.ajax({
+		         
+		     });
+		     
+		   });
+		   
+		   */
+		   
+		   //CLEAR TABLE//
+		   /*
+	       var buttonclear =  document.getElementById('clear');    
+		   buttonclear.addEventListener("click", clearFunction);
+		   function clearFunction(e){
+		       document.getElementById('responseId').innerHTML = "";
+		   };
+		    */
+		    
+		    //GET ALL POKEMON LIST//
+			var request;
+			$('#sendForm').submit(function(e){
+
+			    //prevent form from changing page.
+				e.preventDefault();
+				
+				//GET BUTTON PRESSED//
+				var btn = $(this).find("input[type=submit]:focus").val();
+			   
+				if (request){
+					request.abort();
+				}
+
+				
+				// form is a variable that is to hold the jquery wrapper object
+				// need dollar sign
+				// pointing to form object
+				var $form = $(this);
+				
+				//.find can be skipped.
+				var $inputs = $form.find("input, select, button, textarea");
+				//console.log($inputs);
+			    //	var serializedData = $form.serialize();
+
+			    //	var jsonObj = JSON.stringify(serializedData);					
+                
+                
+				$inputs.prop("disabled",true);
+
+				var serializedData;
+				
+				
+				//////FUNCTION GROUPS//////
+	            
+	            function clearFunction(){
+	                $('#responseId').html("");
+	                
+    		     //  document.getElementById('personDataTable').innerHTML = "";
+    		       $inputs.prop("disabled", false);
+    		   }
+				
+                function requestToDB(){
+    				request = $.ajax({
+    					url: "test.php",
+    					type: "post",
+    					data: serializedData,
+    					dataType: "json"
+					});
+				
+    				request.done(function (response, textStatus, jqXHR){
+                      // console.log(response);
+    
+    					var jsonL = response.length;
+    				//	console.log(jsonL);
+    					drawTable(response,jsonL);
+    					 $('#personDataTable').DataTable();
+    				});
+				
+    				request.fail(function (jqXHR, textStatus, errorThrown){
+    					console.error(
+    					            "The following error occurred: "+
+    								textStatus, errorThrown
+    								);
+    				});
+				
+    				request.always(function () {
+    					// Reenable the inputs
+    					$inputs.prop("disabled", false);
+    				});
+				
+			
+			function drawTable(data,length) {
+				for (var i = 0; i < length; i++) {
+						drawRow(data[i][0],data[i][1]);	
+				}								
+			}
+			
+			///data/v2/sprites/pokemon
+			function drawRow(rowId,rowName) {
+			    
+				var row = $("<tr />")
+				$("#personDataTable tbody").append(row); //this will append tr element to table... keep its reference for a while since we will add cels into it
+				row.append($("<td align=\"center\">" + rowId + "</td>"));
+				row.append($("<td align=\"center\">" + rowName + "</td>"));
+				row.append($("<td align=\"center\">" + "<img src=\"data/v2/sprites/pokemon/" + rowId + ".png\">" + "</td>"));
+				
+			}
+        }
+        
+        //SELECT FUNCTION//
+        if(btn == "Get_Pokemon"){
+            clearFunction();
+            $inputs.prop("disabled",true);
+             $('#responseId').append( "<table id=\"personDataTable\">" +
+             "<thead>" +
+                 "<tr>" +
+			"<th>Id</th>" +
+			"<th>Pokemon</th>" +
+			"<th>Image</th>" +
+		"</tr>" +
+		"</thead>" +
+		"<tbody>" +
+		"</tbody>" +
+		"</table>");
+		
+            serializedData = {
+			    "typerequest": "Get_Pokemon"
+			};
+			requestToDB();
+			
+        } else if (btn == "Clear_Table"){
+            clearFunction();
+        } else if (btn == "Get_Description") {
+            clearFunction();
+            $inputs.prop("disabled",true);
+            $('#responseId').append( "<table id=\"personDataTable\">" +
+            "<thead>" +
+                 "<tr>" +
+			"<th>Pokemon</th>" +
+			"<th>Image</th>" +
+			"<th>Description</th>" +
+		"</tr>" +
+		"</thead>" +
+		"<tbody>" +
+		"</tbody>" +		
+		"</table>");
+		
+            serializedData = {
+			    "typerequest": "Get_Description"
+			};
+			requestToDB();
+        }
+			
+		});
+	});	
+		
+	</script>
+	
+</body>
+</html>
